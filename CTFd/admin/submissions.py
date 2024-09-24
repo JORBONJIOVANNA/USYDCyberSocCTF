@@ -38,7 +38,7 @@ def submissions_listing(submission_type):
         .join(Challenges)
         .join(Model)
         .order_by(Submissions.date.desc())
-        .paginate(page=page, per_page=50, error_out=False)
+        .paginate(page=page, per_page=50)
     )
 
     args = dict(request.args)

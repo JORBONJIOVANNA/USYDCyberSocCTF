@@ -112,13 +112,13 @@ class UserList(Resource):
             users = (
                 Users.query.filter_by(**query_args)
                 .filter(*filters)
-                .paginate(per_page=50, max_per_page=100, error_out=False)
+                .paginate(per_page=50, max_per_page=100)
             )
         else:
             users = (
                 Users.query.filter_by(banned=False, hidden=False, **query_args)
                 .filter(*filters)
-                .paginate(per_page=50, max_per_page=100, error_out=False)
+                .paginate(per_page=50, max_per_page=100)
             )
 
         response = UserSchema(view="user", many=True).dump(users.items)

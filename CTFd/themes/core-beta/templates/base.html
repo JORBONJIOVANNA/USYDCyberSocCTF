@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{{ title or Configs.ctf_name }}</title>
+  <title>{{ Configs.ctf_name }}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
-
-  {{ meta | safe }}
 
   {% block stylesheets %}
     {{ Assets.css("assets/scss/main.scss") }}
   {% endblock %}
 
   {{ Plugins.styles }}
-
-  {{ Assets.js("assets/js/color_mode_switcher.js", type=None) }}
 
   <script type="text/javascript">
       window.init = {
@@ -24,7 +20,7 @@
           'userId': {{ Session.id }},
           'userName': {{ User.name | tojson }},
           'userEmail': {{ User.email | tojson }},
-          'teamId': {{ Team.id | tojson }},
+          'teamId': {{ Team.id | tojson }}, 
           'teamName': {{ Team.name | tojson }},
           'start': {{ Configs.start | tojson }},
           'end': {{ Configs.end | tojson }},
@@ -59,7 +55,7 @@
 {% include "components/notifications.html" %}
 
 {% block scripts %}
-  {{ Assets.js("assets/js/page.js") }}
+  {{ Assets.js("assets/js/index.js") }}
 {% endblock %}
 
 {{ Plugins.scripts }}

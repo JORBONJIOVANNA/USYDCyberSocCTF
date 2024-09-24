@@ -18,7 +18,7 @@ from CTFd.utils.plugins import (
 from CTFd.utils.plugins import register_script as utils_register_plugin_script
 from CTFd.utils.plugins import register_stylesheet as utils_register_plugin_stylesheet
 
-Menu = namedtuple("Menu", ["title", "route", "link_target"])
+Menu = namedtuple("Menu", ["title", "route"])
 
 
 def register_plugin_assets_directory(app, base_path, admins_only=False, endpoint=None):
@@ -55,7 +55,7 @@ def register_plugin_asset(app, asset_path, admins_only=False, endpoint=None):
         endpoint = asset_path.replace("/", ".")
 
     def asset_handler():
-        return send_file(asset_path, max_age=3600)
+        return send_file(asset_path)
 
     if admins_only:
         asset_handler = admins_only_wrapper(asset_handler)
@@ -106,7 +106,7 @@ def register_admin_plugin_stylesheet(*args, **kwargs):
     utils_register_admin_plugin_stylesheet(*args, **kwargs)
 
 
-def register_admin_plugin_menu_bar(title, route, link_target=None):
+def register_admin_plugin_menu_bar(title, route):
     """
     Registers links on the Admin Panel menubar/navbar
 
@@ -114,7 +114,7 @@ def register_admin_plugin_menu_bar(title, route, link_target=None):
     :param route: A string that is the href used by the link
     :return:
     """
-    am = Menu(title=title, route=route, link_target=link_target)
+    am = Menu(title=title, route=route)
     app.admin_plugin_menu_bar.append(am)
 
 
@@ -127,7 +127,7 @@ def get_admin_plugin_menu_bar():
     return app.admin_plugin_menu_bar
 
 
-def register_user_page_menu_bar(title, route, link_target=None):
+def register_user_page_menu_bar(title, route):
     """
     Registers links on the User side menubar/navbar
 
@@ -135,7 +135,7 @@ def register_user_page_menu_bar(title, route, link_target=None):
     :param route: A string that is the href used by the link
     :return:
     """
-    p = Menu(title=title, route=route, link_target=link_target)
+    p = Menu(title=title, route=route)
     app.plugin_menu_bar.append(p)
 
 
@@ -151,7 +151,7 @@ def get_user_page_menu_bar():
             route = p.route
         else:
             route = url_for("views.static_html", route=p.route)
-        pages.append(Menu(title=p.title, route=route, link_target=p.link_target))
+        pages.append(Menu(title=p.title, route=route))
     return pages
 
 

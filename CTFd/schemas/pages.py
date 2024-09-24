@@ -49,18 +49,6 @@ class PageSchema(ma.ModelSchema):
         ],
     )
 
-    link_target = field_for(
-        Pages,
-        "link_target",
-        allow_none=True,
-        validate=[
-            validate.OneOf(
-                choices=[None, "_self", "_blank"],
-                error="Invalid link target",
-            )
-        ],
-    )
-
     @pre_load
     def validate_route(self, data):
         route = data.get("route")
