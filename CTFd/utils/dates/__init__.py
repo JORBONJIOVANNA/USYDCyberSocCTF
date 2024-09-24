@@ -1,6 +1,5 @@
+import datetime
 import time
-from datetime import datetime as DateTime
-from typing import Union
 
 from CTFd.utils import get_config
 
@@ -58,30 +57,17 @@ def view_after_ctf():
     return get_config("view_after_ctf")
 
 
-def unix_time(dt: DateTime) -> int:
-    if dt is None or not isinstance(dt, DateTime):
-        print("Invalid datetime object for time filter function.")
-        return None
-    return int((dt - DateTime(1970, 1, 1)).total_seconds())
+def unix_time(dt):
+    return int((dt - datetime.datetime(1970, 1, 1)).total_seconds())
 
 
-def unix_time_millis(dt: DateTime) -> int:
-    ut = unix_time(dt)
-    if ut is None:
-        return None
-    return ut * 1000
+def unix_time_millis(dt):
+    return unix_time(dt) * 1000
 
 
-def unix_time_to_utc(t: Union[int, float]) -> DateTime:
-    if t is None:
-        print("Invalid datetime object for time filter function.")
-        return None
-    # TODO: The utcfromtimestamp() has been deprecated
-    return DateTime.utcfromtimestamp(t)
+def unix_time_to_utc(t):
+    return datetime.datetime.utcfromtimestamp(t)
 
 
-def isoformat(dt: DateTime) -> str:
-    if dt is None or not isinstance(dt, DateTime):
-        print("Invalid datetime object for time filter function.")
-        return None
+def isoformat(dt):
     return dt.isoformat() + "Z"

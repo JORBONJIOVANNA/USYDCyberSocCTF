@@ -12,7 +12,7 @@ UserAttrs = namedtuple(
         "website",
         "affiliation",
         "country",
-        "bracket_id",
+        "bracket",
         "hidden",
         "banned",
         "verified",

@@ -61,17 +61,14 @@ Alpine.data("TeamGraphs", () => ({
     this.failCount = this.fails.meta.count;
     this.awardCount = this.awards.meta.count;
 
-    let optionMerge = window.teamScoreGraphChartOptions;
-
     embed(
       this.$refs.scoregraph,
       getUserScoreOption(
         window.TEAM.id,
         window.TEAM.name,
         this.solves.data,
-        this.awards.data,
-        optionMerge,
-      ),
+        this.awards.data
+      )
     );
   },
 }));

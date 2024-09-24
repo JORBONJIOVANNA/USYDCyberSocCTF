@@ -1,11 +1,10 @@
 from collections import defaultdict
 
-from flask import request
 from flask_restx import Namespace, Resource
 from sqlalchemy import select
 
-from CTFd.cache import cache, make_cache_key, make_cache_key_with_query_string
-from CTFd.models import Awards, Brackets, Solves, Users, db
+from CTFd.cache import cache, make_cache_key
+from CTFd.models import Awards, Solves, Users, db
 from CTFd.utils import get_config
 from CTFd.utils.dates import isoformat, unix_time_to_utc
 from CTFd.utils.decorators.visibility import (
@@ -41,12 +40,8 @@ class ScoreboardList(Resource):
                         Users.team_id,
                         Users.hidden,
                         Users.banned,
-                        Users.bracket_id,
-                        Brackets.name.label("bracket_name"),
                     ]
-                )
-                .where(Users.team_id.isnot(None))
-                .join(Brackets, Users.bracket_id == Brackets.id, isouter=True)
+                ).where(Users.team_id.isnot(None))
             )
             users = r.fetchall()
             membership = defaultdict(dict)
@@ -57,8 +52,6 @@ class ScoreboardList(Resource):
                         "oauth_id": u.oauth_id,
                         "name": u.name,
                         "score": 0,
-                        "bracket_id": u.bracket_id,
-                        "bracket_name": u.bracket_name,
                     }
 
             # Get user_standings as a dict so that we can more quickly get member scores
@@ -75,8 +68,6 @@ class ScoreboardList(Resource):
                 "oauth_id": x.oauth_id,
                 "name": x.name,
                 "score": int(x.score),
-                "bracket_id": x.bracket_id,
-                "bracket_name": x.bracket_name,
             }
 
             if mode == TEAMS_MODE:
@@ -91,17 +82,11 @@ class ScoreboardList(Resource):
 class ScoreboardDetail(Resource):
     @check_account_visibility
     @check_score_visibility
-    @cache.cached(
-        timeout=60,
-        key_prefix=make_cache_key_with_query_string(allowed_params=["bracket_id"]),
-    )
+    @cache.cached(timeout=60, key_prefix=make_cache_key)
     def get(self, count):
         response = {}
 
-        # Optional filters
-        bracket_id = request.args.get("bracket_id")
-
-        standings = get_standings(count=count, bracket_id=bracket_id)
+        standings = get_standings(count=count)
 
         team_ids = [team.account_id for team in standings]
 
@@ -149,14 +134,10 @@ class ScoreboardDetail(Resource):
                 solves_mapper[team_id], key=lambda k: k["date"]
             )
 
-        for i, x in enumerate(standings):
+        for i, _team in enumerate(team_ids):
             response[i + 1] = {
-                "id": x.account_id,
-                "account_url": generate_account_url(account_id=x.account_id),
-                "name": x.name,
-                "score": int(x.score),
-                "bracket_id": x.bracket_id,
-                "bracket_name": x.bracket_name,
-                "solves": solves_mapper.get(x.account_id, []),
+                "id": standings[i].account_id,
+                "name": standings[i].name,
+                "solves": solves_mapper.get(standings[i].account_id, []),
             }
         return {"success": True, "data": response}
